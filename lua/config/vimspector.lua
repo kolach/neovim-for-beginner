@@ -2,7 +2,15 @@ local M = {}
 
 local utils = require "utils"
 
-local vimspector_python = [[
+if not unpack then
+  -- luacheck: push ignore 121
+  unpack = table.unpack
+  -- luacheck: pop
+end
+
+local vimspector_config_templates = {}
+
+vimspector_config_templates["python"] = [[
 {
   "configurations": {
     "<name>: Launch": {
@@ -22,9 +30,34 @@ local vimspector_python = [[
 }
 ]]
 
+vimspector_config_templates["rust"] = [[
+{
+  "configurations": {
+    "launch": {
+      "adapter": "CodeLLDB",
+      "filetypes": [ "rust" ],
+      "configuration": {
+        "request": "launch",
+        "program": "${workspaceRoot}/target/debug/vimspector_test"
+      }
+    },
+    "attach": {
+      "adapter": "CodeLLDB",
+      "filetypes": [ "rust", "c", "cpp", "jai" ],
+      "configuration": {
+        "request": "attach",
+        "program": "${workspaceRoot}/${fileBasenameNoExtension}",
+        "PID": "${PID}"
+      }
+    }
+  }
+}
+]]
+
 local function debuggers()
   vim.g.vimspector_install_gadgets = {
     "debugpy", -- Python
+    "CodeLLDB", -- Rust
   }
 end
 
@@ -34,10 +67,16 @@ function M.generate_debug_profile()
   local buf = vim.api.nvim_get_current_buf()
   local ft = vim.api.nvim_buf_get_option(buf, "filetype")
 
-  if ft == "python" then
-    -- Get Python path
-    local python3 = vim.fn.exepath "python"
-    local debugProfile = string.format(vimspector_python, python3)
+  local debugTemplate = vimspector_config_templates[ft]
+  if debugTemplate == nil then
+    utils.info("Unsupported language - " .. ft, "Generate Debug Profile")
+  else
+    local templateArgs = {}
+    if ft == "python" then
+      table.insert(templateArgs, vim.fn.exepath "python")
+    end
+
+    local debugProfile = string.format(debugTemplate, unpack(templateArgs))
 
     -- Generate debug profile in a new window
     vim.api.nvim_exec("vsp", true)
@@ -51,8 +90,6 @@ function M.generate_debug_profile()
       table.insert(lines, s)
     end
     vim.api.nvim_buf_set_lines(bufNew, 0, -1, false, lines)
-  else
-    utils.info("Unsupported language - " .. ft, "Generate Debug Profile")
   end
 end
 

@@ -1005,7 +1005,7 @@ function M.setup()
       config = function()
         require("config.vimspector").setup()
       end,
-      disable = true,
+      disable = false,
     }
 
     -- Test

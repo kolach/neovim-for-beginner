@@ -10,6 +10,8 @@ g.mapleader = " "
 g.maplocalleader = ","
 g.vimsyn_embed = "lPr" -- Syntax embedding for Lua, Python and Ruby
 
+g.vimspector_enable_mappings = "HUMAN" -- enable human keymap for vimspector
+
 opt.termguicolors = true -- Enable colors in terminal
 opt.hlsearch = true --Set highlight on search
 opt.number = true --Make line numbers default
