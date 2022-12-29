@@ -33,8 +33,8 @@ end
 -- Find dotfiles
 function M.find_dotfiles()
   require("telescope.builtin").find_files {
-    prompt_title = "<Dotfiles>",
-    cwd = "$HOME/workspace/alpha2phi/dotfiles/",
+    prompt_title = "Dotfiles",
+    cwd = "$NEOVIM_CONFIG/",
   }
 end
 

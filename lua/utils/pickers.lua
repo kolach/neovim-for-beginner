@@ -24,7 +24,7 @@ local custom_theme = require("telescope.themes").get_dropdown {
 local custom_pickers = {
   dotfiles = {
     theme = custom_theme,
-    cwd = "$HOME/workspace/alpha2phi/neovim-for-beginner/",
+    cwd = "$NEOVIM_CONFIG/",
     fun = "fd",
   },
 }
